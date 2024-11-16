@@ -5,7 +5,9 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
+import { CommonActions } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -14,11 +16,14 @@ import CustomButton from '../../../components/CustomButton.js';
 import InputField from '../../../components/InputField.js';
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (text) => {
     const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -27,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
     } else {
       setEmailError('');
     }
-    setEmail(text);
+    setFormData(prev => ({ ...prev, email: text }));
   };
 
   const validatePassword = (text) => {
@@ -36,17 +41,53 @@ const LoginScreen = ({ navigation }) => {
     } else {
       setPasswordError('');
     }
-    setPassword(text);
+    setFormData(prev => ({ ...prev, password: text }));
   };
 
-  const handleRegisterPress = () => {
-    // Validate email and password
-    validateEmail(email);
-    validatePassword(password);
+  const handleLoginPress = async () => {
+    try {
+      // Validate before submission
+      validateEmail(formData.email);
+      validatePassword(formData.password);
 
-    // If there are no errors, navigate to the Register screen
-    if (!emailError && !passwordError) {
-      navigation.navigate('Register');
+      // Check if there are any validation errors
+      if (emailError || passwordError) {
+        return;
+      }
+
+      setIsLoading(true);
+
+      // Replace with your actual API URL
+      const API_URL = 'YOUR_API_URL/auth/login';
+      
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Login failed');
+      }
+
+      // Reset navigation state and navigate to MainApp
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'MainApp' }],
+        })
+      );
+    } catch (error) {
+      Alert.alert(
+        'Login Error',
+        error.message || 'An error occurred during login. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,7 +119,7 @@ const LoginScreen = ({ navigation }) => {
             />
           }
           keyboardType="email-address"
-          value={email}
+          value={formData.email}
           onChangeText={validateEmail}
         />
 
@@ -98,16 +139,20 @@ const LoginScreen = ({ navigation }) => {
           inputType={showPassword ? 'text' : 'password'}
           fieldButtonLabel={showPassword ? 'Hide' : 'Show'}
           fieldButtonFunction={() => setShowPassword(!showPassword)}
-          value={password}
+          value={formData.password}
           onChangeText={validatePassword}
         />
 
-        <CustomButton label={"Login"} onPress={handleRegisterPress}  />
+        <CustomButton 
+          label={isLoading ? "Loading..." : "Login"} 
+          onPress={handleLoginPress}
+          disabled={isLoading}
+        />
 
         <View className="flex-row justify-center mb-8">
           <Text className="underline">New to the app?</Text>
-          <TouchableOpacity  onPress={() => navigation.navigate('Register')}>
-            <Text className="text-purple-600 font-semibold ">Register</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+            <Text className="text-purple-600 font-semibold"> Register</Text>
           </TouchableOpacity>
         </View>
       </View>

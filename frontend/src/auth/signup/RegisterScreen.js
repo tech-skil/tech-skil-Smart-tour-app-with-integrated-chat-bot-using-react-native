@@ -8,12 +8,9 @@ import {
   Image,
 } from 'react-native';
 
-import DatePicker from 'react-native-date-picker';
 import InputField from '../../../components/InputField';
-
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import RegistrationSVG from '../../../assets/images/image.png';
 import CustomButton from '../../../components/CustomButton';
 
@@ -22,9 +19,6 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
-  const [dobLabel, setDobLabel] = useState('Date of Birth');
   const [fullNameError, setFullNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -68,116 +62,86 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleRegister = () => {
+    // Validate fields
     validateFullName(fullName);
     validateEmail(email);
     validatePassword(password);
     validateConfirmPassword(confirmPassword);
 
-    // If all validations pass, you can proceed with registration
-    if (
-      !fullNameError &&
-      !emailError &&
-      !passwordError &&
-      !confirmPasswordError
-    ) {
-      // Perform registration logic here
+    // If there are no validation errors, print success message
+    if (!fullNameError && !emailError && !passwordError && !confirmPasswordError) {
       console.log('Registration successful');
+    } else {
+      console.log('Please fix validation errors');
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center">
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        className="px-6"
-      >
-        <View className="items-center">
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
+        <View style={{ alignItems: 'center' }}>
           <Image
             source={RegistrationSVG}
             style={{ height: 300, width: 300, transform: [{ rotate: '-5deg' }] }}
           />
         </View>
 
-        <Text className="text-4xl font-medium text-gray-800 mb-8">Register</Text>
-        <Text className="text-center text-gray-500 mb-8">Or, register with email ...</Text>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#333', marginVertical: 20 }}>Register</Text>
+        {/* <Text style={{ textAlign: 'center', color: '#666', marginBottom: 20 }}>
+          Or, register with email...
+        </Text> */}
 
         {fullNameError ? (
-          <Text className="text-red-500 mb-2">{fullNameError}</Text>
+          <Text style={{ color: 'red', marginBottom: 8 }}>{fullNameError}</Text>
         ) : null}
-        <InputField
-          label={'Full Name'}
-          icon={
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color="#666"
-              style={{ marginRight: 5 }}
-            />
-          }
+        <InputField 
+          label="Full Name"
+          icon={<Ionicons name="person-outline" size={20} color="#666" style={{ marginRight: 5 }} />}
           value={fullName}
           onChangeText={validateFullName}
         />
 
         {emailError ? (
-          <Text className="text-red-500 mb-2">{emailError}</Text>
+          <Text style={{ color: 'red', marginBottom: 8 }}>{emailError}</Text>
         ) : null}
         <InputField
-          label={'Email ID'}
-          icon={
-            <MaterialIcons
-              name="alternate-email"
-              size={20}
-              color="#666"
-              style={{ marginRight: 5 }}
-            />
-          }
+          label="Email ID"
+          icon={<MaterialIcons name="alternate-email" size={20} color="#666" style={{ marginRight: 5 }} />}
           keyboardType="email-address"
           value={email}
           onChangeText={validateEmail}
         />
 
         {passwordError ? (
-          <Text className="text-red-500 mb-2">{passwordError}</Text>
+          <Text style={{ color: 'red', marginBottom: 8 }}>{passwordError}</Text>
         ) : null}
         <InputField
-          label={'Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color="#666"
-              style={{ marginRight: 5 }}
-            />
-          }
+          label="Password"
+          icon={<Ionicons name="ios-lock-closed-outline" size={20} color="#666" style={{ marginRight: 5 }} />}
           inputType="password"
           value={password}
           onChangeText={validatePassword}
+          secureTextEntry
         />
 
         {confirmPasswordError ? (
-          <Text className="text-red-500 mb-2">{confirmPasswordError}</Text>
+          <Text style={{ color: 'red', marginBottom: 8 }}>{confirmPasswordError}</Text>
         ) : null}
         <InputField
-          label={'Confirm Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color="#666"
-              style={{ marginRight: 5 }}
-            />
-          }
+          label="Confirm Password"
+          icon={<Ionicons name="ios-lock-closed-outline" size={20} color="#666" style={{ marginRight: 5 }} />}
           inputType="password"
           value={confirmPassword}
           onChangeText={validateConfirmPassword}
+          secureTextEntry
         />
 
-        <CustomButton label={'Register'} onPress={handleRegister} />
+        <CustomButton label="Register" onPress={handleRegister} />
 
-        <View className="flex-row justify-center mb-8">
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
           <Text>Already registered?</Text>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text className="text-purple-700 font-semibold"> Login</Text>
+            <Text style={{ color: '#6A0DAD', fontWeight: '600' }}> Login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
