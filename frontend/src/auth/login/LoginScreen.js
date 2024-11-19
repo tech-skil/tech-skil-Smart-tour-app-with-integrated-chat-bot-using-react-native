@@ -1,3 +1,4 @@
+// src/auth/login/LoginScreen.js
 import React, { useState } from "react";
 import {
   SafeAreaView,
@@ -41,16 +42,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleRegisterPress = () => {
-    // Validate email and password
-    // validateEmail(email);
-    // validatePassword(password);hf@gmail
-
-    // If there are no errors, navigate to the Register screen
-    if (!emailError && !passwordError) {
-      // navigation.navigate("HomeTab");
-      navigation.replace("HomeTab");
-    }
-    Alert.alert("Login SuccessFul");
+    navigation.replace("MainApp");
   };
 
   return (
@@ -113,8 +105,8 @@ const LoginScreen = ({ navigation }) => {
 
         <View className="flex-row justify-center mb-8">
           <Text className="underline">New to the app?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-            <Text className="text-purple-600 font-semibold ">Register</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <Text className="text-purple-600 font-semibold">Register</Text>
           </TouchableOpacity>
         </View>
       </View>
