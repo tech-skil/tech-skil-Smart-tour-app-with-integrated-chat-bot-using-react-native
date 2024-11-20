@@ -3,9 +3,9 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import Homepage from "../components/Homepage";
-import { OffersScreen } from "../components/Discover";
-import { VisitedPlacesScreen } from "../components/VisitedPlacesScreen";
-import { PlanningScreen } from "../components/PlanningScreen";
+import { DiscoverScreen } from "../components/Discover";
+import { Budgetplanner } from "../components/Budgetplanner";
+import { Tourguid } from "../components/Tourguid";
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +38,7 @@ export const AppNavigator = () => {
       />
       <Tab.Screen
         name="Discover"
-        component={OffersScreen}
+        component={DiscoverScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="star" size={size} color={color} />
@@ -46,17 +46,17 @@ export const AppNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Visited"
-        component={VisitedPlacesScreen}
+        name="Budget Planner"
+        component={Budgetplanner}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Feather name="map-pin" size={size} color={color} />
+            <Feather name="dollar-sign" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
         name="Travel Guid"
-        component={PlanningScreen}
+        component={Tourguid}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="message-circle" size={size} color={color} />
