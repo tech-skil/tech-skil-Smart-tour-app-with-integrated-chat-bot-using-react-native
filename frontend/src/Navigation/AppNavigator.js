@@ -41,7 +41,7 @@ export const AppNavigator = () => {
         component={OffersScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Feather name="tag" size={size} color={color} />
+            <Feather name="star" size={size} color={color} />
           ),
         }}
       />
