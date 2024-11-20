@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+
   ActivityIndicator,
   Platform,
 } from "react-native";
@@ -13,11 +14,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
+
 import LoginSVG from "../../../assets/images/image.png";
 import CustomButton from "../../../components/CustomButton.js";
 import InputField from "../../../components/InputField.js";
 
 const LoginScreen = ({ navigation }) => {
+
   const [email, setEmail] = useState("admin@triplo.com");
   const [password, setPassword] = useState("admin@1234");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +45,7 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+
   const validateEmail = (text) => {
     const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!emailRegex.test(text.trim())) {
@@ -51,6 +55,10 @@ const LoginScreen = ({ navigation }) => {
       setEmailError("");
       return true;
     }
+// <<<<<<< master
+// =======
+//     setFormData(prev => ({ ...prev, email: text }));
+// >>>>>>> main
   };
 
   const validatePassword = (text) => {
@@ -61,6 +69,7 @@ const LoginScreen = ({ navigation }) => {
       setPasswordError("");
       return true;
     }
+// <<<<<<< master
   };
 
   const handleLoginPress = async () => {
@@ -133,6 +142,7 @@ const LoginScreen = ({ navigation }) => {
       navigation.replace("Login");
     } catch (error) {
       console.error("Logout error:", error);
+
     }
   };
 
@@ -176,11 +186,13 @@ const LoginScreen = ({ navigation }) => {
             />
           }
           keyboardType="email-address"
+// <<<<<<< master
           value={email}
           onChangeText={(text) => {
             setEmail(text);
             validateEmail(text);
           }}
+
         />
 
         {passwordError ? (
@@ -199,6 +211,7 @@ const LoginScreen = ({ navigation }) => {
           inputType={showPassword ? "text" : "password"}
           fieldButtonLabel={showPassword ? "Hide" : "Show"}
           fieldButtonFunction={() => setShowPassword(!showPassword)}
+
           value={password}
           onChangeText={(text) => {
             setPassword(text);
@@ -208,6 +221,7 @@ const LoginScreen = ({ navigation }) => {
 
         <CustomButton
           label={isLoading ? "Logging in..." : "Login"}
+
           onPress={handleLoginPress}
           disabled={isLoading}
         />
@@ -216,6 +230,7 @@ const LoginScreen = ({ navigation }) => {
           <Text className="text-gray-600">New to the app?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
             <Text className="text-purple-600 font-semibold">Register</Text>
+
           </TouchableOpacity>
         </View>
       </View>

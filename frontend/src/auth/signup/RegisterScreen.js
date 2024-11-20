@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+// <<<<<<< master
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RegistrationSVG from "../../../assets/images/image.png";
@@ -31,6 +32,7 @@ const RegisterScreen = ({ navigation }) => {
       setFullNameError("Please enter your name");
     } else if (fullName.length < 3) {
       setFullNameError("Full name must be at least 3 characters long.");
+
     } else {
       setFullNameError("");
     }
@@ -69,6 +71,7 @@ const RegisterScreen = ({ navigation }) => {
     }
   };
 
+// <<<<<<< master
   const handleRegister = async () => {
     // Run validation
     validateFullName();
@@ -122,13 +125,16 @@ const RegisterScreen = ({ navigation }) => {
       Alert.alert("Error", "An error occurred. Please check your connection.");
     } finally {
       setIsLoading(false);
+
     }
   };
 
   return (
+// <<<<<<< master
     <SafeAreaView className="flex-1 m-4 justify-center">
       <ScrollView showsVerticalScrollIndicator={false} className="px-6">
         <View className="items-center p-10">
+
           <Image
             source={RegistrationSVG}
             style={{
@@ -143,6 +149,7 @@ const RegisterScreen = ({ navigation }) => {
             Register
           </Text>
 
+// <<<<<<< master
           {fullNameError ? (
             <Text className="text-red-500 mb-2">{fullNameError}</Text>
           ) : null}
@@ -246,6 +253,7 @@ const RegisterScreen = ({ navigation }) => {
                 Register
               </Text>
             )}
+
           </TouchableOpacity>
 
           <View className="flex-row justify-center mb-8">
