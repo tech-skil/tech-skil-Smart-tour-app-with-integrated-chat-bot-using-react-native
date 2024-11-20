@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 import tw from 'twrnc';
 
-export const OffersScreen = () => {
+export const Discover = () => {
   const offers = [
     {
       title: "Early Bird Special",
