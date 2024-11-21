@@ -5,7 +5,9 @@ const { generateToken } = require("../utils/jwtUtils");
 async function signin(email, password) {
   try {
     const existingUser = await User.findOne({ email });
+
     // console.log("Existing User Found in Signin:", existingUser);
+
 
     if (!existingUser) {
       throw new Error("Invalid email or password");
@@ -17,6 +19,7 @@ async function signin(email, password) {
     }
 
     // Debugging logs to check values passed to bcrypt.compare
+
     // console.log("Plain text password:", password);
     // console.log("Hashed password from DB:", existingUser.password);
 
@@ -25,12 +28,14 @@ async function signin(email, password) {
       password,
       existingUser.password
     );
+
     if (!isPasswordValid) {
       throw new Error("Incorrect password");
     }
 
     const token = generateToken(existingUser);
     return token;
+
   } catch (error) {
     console.log("Login error:", error.message);
     throw new Error("Invalid credentials");

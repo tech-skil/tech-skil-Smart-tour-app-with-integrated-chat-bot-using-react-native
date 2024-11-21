@@ -4,7 +4,9 @@ const bcrypt = require("bcrypt");
 async function createAdminAccount() {
   try {
     const existingAdmin = await User.findOne({ email: "admin@triplo.com" });
+
     // console.log("Existing Admin Found:", existingAdmin); // Log existing admin user if found
+
 
     if (!existingAdmin) {
       const hashedPassword = await bcrypt.hash("admin@1234", 10);

@@ -1,15 +1,24 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
-// import logo from "../../assets/images/logo.jpg";
-
+import { View, Text, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
 const Header = () => {
+  const navigation = useNavigation();
+  const onProfilePress = () => {
+    navigation.navigate("Profile");
+  };
+
   return (
-    <View className="flex-row items-center py-4 px-4 bg-white">
-      {/* <Image source={logo} className="rounded-full h-14 w-14" /> */}
-      <View className="px-4 justify-between">
-        <Text className="text-3xl font-bold">Triplo</Text>
-        <Text className="text-gray-500">Your Travel Buddy</Text>
+    <View className="flex-row items-center justify-between py-3 px-4 bg-white shadow-sm">
+      <View className="flex-row items-center">
+        <View className="justify-between">
+          <Text className="text-2xl font-bold text-gray-800">Triplo</Text>
+          <Text className="text-sm text-gray-500">Your Travel Buddy</Text>
+        </View>
       </View>
+      <TouchableOpacity onPress={onProfilePress}>
+        <Icon name="user-circle" size={32} color="#666" />
+      </TouchableOpacity>
     </View>
   );
 };

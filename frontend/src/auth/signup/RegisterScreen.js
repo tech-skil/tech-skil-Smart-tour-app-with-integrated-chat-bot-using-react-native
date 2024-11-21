@@ -7,8 +7,11 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 
+// <<<<<<< master
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RegistrationSVG from "../../../assets/images/image.png";
@@ -22,12 +25,14 @@ const RegisterScreen = ({ navigation }) => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateFullName = () => {
     if (fullName.trim() === "") {
       setFullNameError("Please enter your name");
     } else if (fullName.length < 3) {
       setFullNameError("Full name must be at least 3 characters long.");
+
     } else {
       setFullNameError("");
     }
@@ -66,29 +71,70 @@ const RegisterScreen = ({ navigation }) => {
     }
   };
 
-  const handleRegister = () => {
+// <<<<<<< master
+  const handleRegister = async () => {
+    // Run validation
     validateFullName();
     validateEmail();
     validatePassword();
     validateConfirmPassword();
 
     if (
-      !fullNameError &&
-      !emailError &&
-      !passwordError &&
-      !confirmPasswordError &&
-      fullName.length >= 3 &&
-      password.length >= 8 &&
-      confirmPassword === password
+      fullNameError ||
+      emailError ||
+      passwordError ||
+      confirmPasswordError ||
+      fullName.length < 3 ||
+      password.length < 8 ||
+      confirmPassword !== password
     ) {
-      navigation.navigate("Login");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://192.168.56.1:5000/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: fullName,
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Registration successful!", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]);
+      } else {
+        Alert.alert(
+          "Error",
+          data.message || "Registration failed. Please try again."
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred. Please check your connection.");
+    } finally {
+      setIsLoading(false);
+
     }
   };
 
   return (
+
     <SafeAreaView className="flex-1 m-4 justify-center">
       <ScrollView showsVerticalScrollIndicator={false} className="px-6">
         <View className="items-center p-10">
+
           <Image
             source={RegistrationSVG}
             style={{
@@ -102,9 +148,7 @@ const RegisterScreen = ({ navigation }) => {
           <Text className="text-4xl font-medium text-gray-800 mb-8">
             Register
           </Text>
-          {/* <Text className="text-center text-gray-500 mb-8">
-          Or, register with email ...
-        </Text> */}
+
 
           {fullNameError ? (
             <Text className="text-red-500 mb-2">{fullNameError}</Text>
@@ -200,10 +244,16 @@ const RegisterScreen = ({ navigation }) => {
           <TouchableOpacity
             onPress={handleRegister}
             className="bg-purple-700 p-5 rounded-lg mb-8"
+            disabled={isLoading}
           >
-            <Text className="text-center font-bold text-lg text-white">
-              Register
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-center font-bold text-lg text-white">
+                Register
+              </Text>
+            )}
+
           </TouchableOpacity>
 
           <View className="flex-row justify-center mb-8">

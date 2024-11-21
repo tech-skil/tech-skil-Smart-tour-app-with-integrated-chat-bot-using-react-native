@@ -3,7 +3,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import Homepage from "../components/Homepage";
-import { OffersScreen } from "../components/Discover";
+import { Discover } from "../components/Discover";
 import { VisitedPlacesScreen } from "../components/VisitedPlacesScreen";
 import { PlanningScreen } from "../components/PlanningScreen";
 
@@ -38,7 +38,7 @@ export const AppNavigator = () => {
       />
       <Tab.Screen
         name="Discover"
-        component={OffersScreen}
+        component={Discover}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="star" size={size} color={color} />

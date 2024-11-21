@@ -11,5 +11,5 @@ export default function CustomButton({label, onPress}) {
         {label}
       </Text>
     </TouchableOpacity>
-  );
+  );
 }
