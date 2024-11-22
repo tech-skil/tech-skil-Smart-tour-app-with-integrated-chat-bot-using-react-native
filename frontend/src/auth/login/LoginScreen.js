@@ -218,7 +218,7 @@ const LoginScreen = ({ navigation }) => {
             validatePassword(text);
           }}
         />
-
+        
         <CustomButton
           label={isLoading ? "Logging in..." : "Login"}
 

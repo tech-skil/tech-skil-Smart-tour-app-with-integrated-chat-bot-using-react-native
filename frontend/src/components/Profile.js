@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
+// ProfileOption component with Tailwind classes
 const ProfileOption = ({ iconName, iconColor, title, onPress }) => (
-  <TouchableOpacity style={styles.optionContainer} onPress={onPress}>
+  <TouchableOpacity
+    className="flex-row items-center py-8 px-6 border-b border-gray-200"
+    onPress={onPress}
+  >
     <Icon name={iconName} size={24} color={iconColor} />
-    <Text style={styles.optionText}>{title}</Text>
+    <Text className="ml-4 text-base text-gray-700">{title}</Text>
   </TouchableOpacity>
 );
 
@@ -78,26 +75,26 @@ const Profile = () => {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleOnClose} style={styles.closeButton}>
-          {/* <Text style={styles.closeButtonText}>Close</Text> */}
+    <View className="flex-1 bg-white">
+      <View className="bg-blue-50 p-6 pt-12 items-center">
+        <TouchableOpacity onPress={handleOnClose} className="self-start mb-4">
+          {/* <Text className="text-blue-600">Close</Text> */}
           <Icon name="arrow-left" size={25} color="#4A90E2" />
         </TouchableOpacity>
 
         {userData.profilePic ? (
           <Image
-            source={{ uri: userData.profilePic }}
-            style={styles.profilePic}
+            source={userData.profilePic}
+            className="w-32 h-32 rounded-full mb-4"
           />
         ) : (
-          <Icon name="user-circle" size={96} color="#888" />
+          <Icon name="user-circle" size={108} color="#888" />
         )}
 
-        <Text style={styles.userName}>{userData.name}</Text>
-        <Text style={styles.userEmail}>{userData.email}</Text>
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Edit Profile</Text>
+        <Text className="text-xl font-bold text-gray-800">{userData.name}</Text>
+        <Text className="text-gray-500">{userData.email}</Text>
+        <TouchableOpacity className="mt-4 bg-blue-500 px-6 py-2 rounded-full">
+          <Text className="text-white">Edit Profile</Text>
         </TouchableOpacity>
       </View>
 
@@ -112,84 +109,16 @@ const Profile = () => {
           />
         ))}
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleOnLogout}>
+        <TouchableOpacity
+          className="flex-row items-center py-3 px-4 bg-red-50"
+          onPress={handleOnLogout}
+        >
           <Icon name="sign-out" size={24} color="#DC3545" />
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text className="ml-4 text-base text-red-600">Logout</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    backgroundColor: "#EAF4FC",
-    padding: 24,
-    paddingTop: 48,
-    alignItems: "center",
-  },
-  closeButton: {
-    alignSelf: "flex-start",
-    marginBottom: 16,
-  },
-  closeButtonText: {
-    color: "#4A90E2",
-    fontSize: 16,
-  },
-  profilePic: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    marginBottom: 16,
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  userEmail: {
-    color: "#888",
-  },
-  editButton: {
-    marginTop: 16,
-    backgroundColor: "#4A90E2",
-    paddingVertical: 8,
-    paddingHorizontal: 24,
-    borderRadius: 24,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  optionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  optionText: {
-    marginLeft: 16,
-    fontSize: 16,
-    color: "#333",
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    backgroundColor: "#FDECEA",
-  },
-  logoutText: {
-    marginLeft: 16,
-    fontSize: 16,
-    color: "#DC3545",
-  },
-});
 
 export default Profile;
