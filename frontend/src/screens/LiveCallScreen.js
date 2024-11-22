@@ -1,81 +1,148 @@
-// components/LiveCallScreen.js
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Import for navigation
-import Fuse from "react-native-vector-icons/MaterialCommunityIcons"; // Icon library
-// import "../ExternalApi/GeminiVoice"
-export const LiveCallScreen = () => {
-  const [isMicOn, setIsMicOn] = useState(true); // State for microphone toggle
-  const [isHold, setIsHold] = useState(false); // State for hold (triggered when mic is off)
-  const navigation = useNavigation(); // Navigation hook
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import GeminiVoice from "../ExternalApi/GeminiVoice";
+import Fuse from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-  // Handle Microphone toggle
-  const handleMicToggle = () => {
-    if (isMicOn) {
-      // Mic is on, toggle to off and set hold
-      setIsMicOn(false);
-      setIsHold(true);
+const LiveCallScreen = ({ navigation }) => {
+  const [isMicOn, setIsMicOn] = useState(false);
+  const [response, setResponse] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleEndCall = () => navigation.goBack();
+
+  const handleMicToggle = async () => {
+    if (isListening) {
+      try {
+        setIsLoading(true);
+        const userInput = await GeminiVoice.stopRecognition();
+
+        if (userInput) {
+          const assistantResponse = await GeminiVoice.sendToGemini(userInput);
+          setResponse(assistantResponse);
+          GeminiVoice.speak(assistantResponse);
+        } else {
+          setResponse("I didn't catch that. Please try again.");
+        }
+      } catch (error) {
+        Alert.alert("Error", "An error occurred while processing your input.");
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+        setIsListening(false);
+      }
     } else {
-      // Mic is off, toggle to on and remove hold
-      setIsMicOn(true);
-      setIsHold(false);
+      try {
+        await GeminiVoice.startRecognition();
+        setResponse("Listening...");
+        setIsListening(true);
+      } catch (error) {
+        Alert.alert("Error", "Failed to start voice recognition.");
+        console.error(error);
+      }
     }
-  };
-
-  // Handle End Call navigation
-  const handleEndCall = () => {
-    navigation.goBack(); // Navigate back
+    setIsMicOn(!isMicOn);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-400">
-      {/* Header */}
-      <View className="bg-blue-500 p-4 pt-10">
-        <Text className="text-white text-xl font-bold">Live Call</Text>
-      </View>
-
-      {/* Notification Bar */}
-      <View className="bg-gray-200 p-2">
-        <Text className="text-gray-700 text-sm">
-          Chats are saved, and you can resume them at any time. To stop this,
-          turn off Gemini Apps activity.
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f0f0f0" }}>
+      <View style={{ backgroundColor: "#007AFF", padding: 20 }}>
+        <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
+          Live Call
         </Text>
       </View>
-      {/* Call Controls */}
-      <View className="flex-1 justify-center items-center">
-        <View className="bg-gray-400 w-2/3 h-1/4 rounded-lg flex items-center justify-center">
-          <Text className="text-black text-lg">
-            {isHold
-              ? "On hold. Chat with Triplo."
-              : "In progress. Triplo assisting."}
-          </Text>
-        </View>
+
+      <View
+        style={{
+          padding: 10,
+          backgroundColor: "#fff",
+          margin: 10,
+          borderRadius: 10,
+        }}
+      >
+        <Text style={{ color: "#555", fontSize: 16 }}>
+          Interact with Triplo, your travel assistant. Press the mic button to
+          speak.
+        </Text>
       </View>
 
-      {/* Buttons */}
-      <View className="flex-row justify-evenly items-center p-4">
-        {/* Mic Toggle */}
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#eee",
+          margin: 10,
+          borderRadius: 10,
+          padding: 15,
+        }}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#007AFF" />
+        ) : (
+          <Text style={{ fontSize: 16, color: "#333", textAlign: "center" }}>
+            {response || "Press the mic and ask something about your trip!"}
+          </Text>
+        )}
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          marginBottom: 20,
+        }}
+      >
         <TouchableOpacity
           onPress={handleMicToggle}
-          className={`p-4 px-8 rounded-full ${
-            isMicOn ? "bg-green-500" : "bg-gray-500"
-          }`}
+          style={{
+            backgroundColor: isMicOn ? "#28a745" : "#ccc",
+            padding: 15,
+            borderRadius: 50,
+            justifyContent: "center",
+            alignItems: "center",
+            width: 80,
+            height: 80,
+          }}
         >
           <Fuse
-            name={isMicOn ? "microphone-outline" : "microphone-off-outline"}
+            name={isMicOn ? "microphone-outline" : "microphone-off"}
             size={30}
             color="white"
           />
-          <Text className="text-white text-lg">{isMicOn ? "On" : "Off"}</Text>
+          <Text style={{ color: "white", textAlign: "center", marginTop: 5 }}>
+            {isMicOn ? "Listening" : "Mic Off"}
+          </Text>
         </TouchableOpacity>
-        {/* End Call */}
+
         <TouchableOpacity
           onPress={handleEndCall}
-          className="bg-red-500 p-4 rounded-full"
+          style={{
+            backgroundColor: "#dc3545",
+            padding: 15,
+            borderRadius: 50,
+            justifyContent: "center",
+            alignItems: "center",
+            width: 80,
+            height: 80,
+          }}
         >
-          <Text className="text-white text-lg">End</Text>
+          <Icon name="close" size={30} color="white" />
+          <Text style={{ color: "white", textAlign: "center", marginTop: 5 }}>
+            End
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
+
+export default LiveCallScreen;

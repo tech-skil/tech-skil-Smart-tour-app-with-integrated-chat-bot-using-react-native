@@ -5,7 +5,7 @@ import LoginScreen from "./src/auth/login/LoginScreen";
 import RegisterScreen from "./src/auth/signup/RegisterScreen";
 import { AppNavigator } from "./src/Navigation/AppNavigator";
 import Profile from "./src/components/Profile";
-import { LiveCallScreen } from "./src/screens/LiveCallScreen";
+import LiveCallScreen from "./src/screens/LiveCallScreen";
 
 const Stack = createStackNavigator();
 
