@@ -1,4 +1,4 @@
-// components/Budgetplanner.js
+
 
 import React, { useState } from "react";
 import {
@@ -10,7 +10,7 @@ import {
   SafeAreaView,
 } from "react-native";
 
-// Correctly export the BudgetPlanner component
+
 export const Budgetplanner = () => {
   const [fromPlace, setFromPlace] = useState("");
   const [toPlace, setToPlace] = useState("");
@@ -31,7 +31,7 @@ export const Budgetplanner = () => {
     setCalculatedBudget(null);
 
     try {
-      // Simulating AI model calculation with a timeout
+      
       const budget = await new Promise((resolve) =>
         setTimeout(() => resolve(Math.random() * 1000 + 100), 2000)
       );

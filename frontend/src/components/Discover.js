@@ -10,25 +10,45 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { fetchVideos } from "./YouTubeService"; // Import your YouTube API function
+import { fetchVideos } from "./YouTubeService"; 
 
 export const DiscoverScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("articles");
   const [vlogs, setVlogs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedVideoId, setSelectedVideoId] = useState(null); // State for selected video
+  const [selectedVideoId, setSelectedVideoId] = useState(null); 
 
   const articles = [
     {
-      title: "10 Tips for Traveling on a Budget",
-      author: "John Doe",
-      thumbnail: "https://via.placeholder.com/150/92c952",
-    },
-    // Other articles...
+      "title": "Top 7 Must-Visit Destinations in Karnataka",
+      "author": "Jane Smith",
+      "thumbnail": "https://tse4.mm.bing.net/th?id=OIP.9WQ2cPoA-3tjTAex0XJcUwHaE8&pid=Api&P=0&h=180"
+  },
+  {
+      "title": "How to Experience Karnataka's Culture to the Fullest",
+      "author": "Sarah Brown",
+      "thumbnail": "https://tse1.mm.bing.net/th?id=OIP.lHXbUcnWwyLhHNUI2fK3dgHaE8&pid=Api&P=0&h=180"
+  },
+  {
+      "title": "A Minimalist's Guide to Packing for a Karnataka Adventure",
+      "author": "Mike Johnson",
+      "thumbnail": "https://tse4.mm.bing.net/th?id=OIP.coH49hD9d4qS1NNxv9voyAHaEj&pid=Api&P=0&h=180"
+  },
+  {
+      "title": "Exploring Karnataka's Hidden Gems: 8 Underrated Travel Spots",
+      "author": "Emma Watson",
+      "thumbnail": "https://tse4.mm.bing.net/th?id=OIP.Rtj43mhLV8lhSlf89X9vZQHaEK&pid=Api&P=0&h=180"
+  },
+  {
+      "title": "Travel Sustainably in Karnataka: Tips and Guidelines",
+      "author": "Alex Green",
+      "thumbnail": "https://tse1.mm.bing.net/th?id=OIP.pONg1syl8yFnfZholvD43AHaFj&pid=Api&P=0&h=180"
+    },
+
   ];
 
-  // Fetch vlog videos from YouTube when the search query changes
+  
   useEffect(() => {
     if (activeTab === "vlogs" && searchQuery.trim() !== "") {
       const fetchVlogData = async () => {
@@ -129,34 +149,34 @@ export const DiscoverScreen = () => {
               </TouchableOpacity>
             ))}
           </>
-       ) : selectedVideoId ? (
-        <View className="relative w-full h-56 mb-4">
-          {/* Video Player */}
-          <YoutubePlayer
-            height={300}
-            play={true}
-            videoId={selectedVideoId} // Render the selected video
-            onChangeState={(event) => {
-              if (event === "ended") {
-                setSelectedVideoId(null); // Reset player on video end
-              }
-            }}
-          />
-          {/* Close Button */}
-          <TouchableOpacity
-            onPress={() => setSelectedVideoId(null)} // Close video player
-            style={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              borderRadius: 50,
-              padding: 8,
-            }}
-          >
-            <Feather name="x" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
+        ) : selectedVideoId ? (
+          <View className="relative w-full h-56 mb-4">
+            {/* Video Player */}
+            <YoutubePlayer
+              height={300}
+              play={true}
+              videoId={selectedVideoId} 
+              onChangeState={(event) => {
+                if (event === "ended") {
+                  setSelectedVideoId(null); 
+                }
+              }}
+            />
+            {/* Close Button */}
+            <TouchableOpacity
+              onPress={() => setSelectedVideoId(null)} 
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 10,
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                borderRadius: 50,
+                padding: 8,
+              }}
+            >
+              <Feather name="x" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         ) : (
           <>
             <Text className="text-2xl font-bold mb-4">Recommended Vlogs</Text>
@@ -167,7 +187,7 @@ export const DiscoverScreen = () => {
                 <TouchableOpacity
                   key={index}
                   className="bg-white rounded-lg p-4 mb-4 shadow-md border border-gray-100 flex-row items-center"
-                  onPress={() => setSelectedVideoId(vlog.videoId)} // Set the selected video ID
+                  onPress={() => setSelectedVideoId(vlog.videoId)} 
                 >
                   <Image
                     source={{ uri: vlog.thumbnail }}
