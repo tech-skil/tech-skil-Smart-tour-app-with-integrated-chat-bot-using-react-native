@@ -1,0 +1,2 @@
+from_place,Destination,Travel_Mode,Accommodation_Type,Food_Preference,Activity,Purpose,Travel_Duration_Days,Season,Month,Group_Size,Distance_in_km,Specific_Interests,Discounts_Offers,Destination_Popularity,Cost_Transportation,Cost_Accommodation,Cost_Food,Cost_Activities,Age_Group,Income_Level,Budget,From_Place,Predicted_Budget
+Delhi,Rajasthan,Train,Hostel,Budget Meals,Cultural Events,Leisure,5,Monsoon,June,5,1359,Beaches,Travel Discounts,Low,2812,7088,4628,9727,Adult,Middle,28919,Origin_City,28522.363

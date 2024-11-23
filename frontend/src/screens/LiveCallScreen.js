@@ -53,92 +53,51 @@ const LiveCallScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f0f0f0" }}>
-      <View style={{ backgroundColor: "#007AFF", padding: 20 }}>
-        <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
-          Live Call
-        </Text>
+    <SafeAreaView className="flex-1 bg-gray-300">
+      <View className="bg-blue-600 p-5">
+        <Text className="text-white text-xl font-bold">Live Call</Text>
       </View>
 
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: "#fff",
-          margin: 10,
-          borderRadius: 10,
-        }}
-      >
-        <Text style={{ color: "#555", fontSize: 16 }}>
+      <View className="p-3 bg-white m-3 rounded-lg">
+        <Text className="text-gray-600 text-base">
           Interact with Triplo, your travel assistant. Press the mic button to
           speak.
         </Text>
       </View>
 
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#eee",
-          margin: 10,
-          borderRadius: 10,
-          padding: 15,
-        }}
-      >
+      <View className="flex-1 justify-center items-center bg-gray-200 m-3 rounded-lg p-4">
         {isLoading ? (
           <ActivityIndicator size="large" color="#007AFF" />
         ) : (
-          <Text style={{ fontSize: 16, color: "#333", textAlign: "center" }}>
+          <Text className="text-base text-gray-800 text-center">
             {response || "Press the mic and ask something about your trip!"}
           </Text>
         )}
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          marginBottom: 20,
-        }}
-      >
+      <View className="flex-row justify-evenly mb-5">
         <TouchableOpacity
           onPress={handleMicToggle}
-          style={{
-            backgroundColor: isMicOn ? "#28a745" : "#ccc",
-            padding: 15,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            width: 80,
-            height: 80,
-          }}
+          className={`${
+            isMicOn ? "bg-green-500" : "bg-gray-300"
+          } p-4 rounded-full justify-center items-center w-20 h-20`}
         >
           <Fuse
             name={isMicOn ? "microphone-outline" : "microphone-off"}
             size={30}
             color="white"
           />
-          <Text style={{ color: "white", textAlign: "center", marginTop: 5 }}>
-            {isMicOn ? "Listening" : "Mic Off"}
+          <Text className="text-white text-center  mt-2">
+            {isMicOn ? "On" : "Mic Off"}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleEndCall}
-          style={{
-            backgroundColor: "#dc3545",
-            padding: 15,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            width: 80,
-            height: 80,
-          }}
+          className="bg-red-600 p-4 rounded-full justify-center items-center w-20 h-20"
         >
           <Icon name="close" size={30} color="white" />
-          <Text style={{ color: "white", textAlign: "center", marginTop: 5 }}>
-            End
-          </Text>
+          <Text className="text-white text-center mt-2">End</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

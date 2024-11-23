@@ -21,13 +21,31 @@ export const DiscoverScreen = () => {
 
   const articles = [
     {
-      title: "10 Tips for Traveling on a Budget",
-      author: "John Doe",
-      thumbnail: "https://via.placeholder.com/150/92c952",
+      title: "Top 7 Must-Visit Destinations in Karnataka",
+      author: "Jane Smith",
+      thumbnail: "https://www.karnatakatourism.org/top-places-to-visit",
     },
-    // Other articles...
+    {
+      title: "How to Experience Karnataka's Culture to the Fullest",
+      author: "Sarah Brown",
+      thumbnail: "https://www.karnatakatourism.org/cultural-experiences",
+    },
+    {
+      title: "A Minimalist's Guide to Packing for a Karnataka Adventure",
+      author: "Mike Johnson",
+      thumbnail: "https://www.karnatakatourism.org/travel-tips",
+    },
+    {
+      title: "Exploring Karnataka's Hidden Gems: 8 Underrated Travel Spots",
+      author: "Emma Watson",
+      thumbnail: "https://www.karnatakatourism.org/hidden-gems",
+    },
+    {
+      title: "Travel Sustainably in Karnataka: Tips and Guidelines",
+      author: "Alex Green",
+      thumbnail: "https://www.karnatakatourism.org/sustainable-tourism",
+    },
   ];
-
   // Fetch vlog videos from YouTube when the search query changes
   useEffect(() => {
     if (activeTab === "vlogs" && searchQuery.trim() !== "") {
@@ -129,34 +147,34 @@ export const DiscoverScreen = () => {
               </TouchableOpacity>
             ))}
           </>
-       ) : selectedVideoId ? (
-        <View className="relative w-full h-56 mb-4">
-          {/* Video Player */}
-          <YoutubePlayer
-            height={300}
-            play={true}
-            videoId={selectedVideoId} // Render the selected video
-            onChangeState={(event) => {
-              if (event === "ended") {
-                setSelectedVideoId(null); // Reset player on video end
-              }
-            }}
-          />
-          {/* Close Button */}
-          <TouchableOpacity
-            onPress={() => setSelectedVideoId(null)} // Close video player
-            style={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              borderRadius: 50,
-              padding: 8,
-            }}
-          >
-            <Feather name="x" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
+        ) : selectedVideoId ? (
+          <View className="relative w-full h-56 mb-4">
+            {/* Video Player */}
+            <YoutubePlayer
+              height={300}
+              play={true}
+              videoId={selectedVideoId} // Render the selected video
+              onChangeState={(event) => {
+                if (event === "ended") {
+                  setSelectedVideoId(null); // Reset player on video end
+                }
+              }}
+            />
+            {/* Close Button */}
+            <TouchableOpacity
+              onPress={() => setSelectedVideoId(null)} // Close video player
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 10,
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                borderRadius: 50,
+                padding: 8,
+              }}
+            >
+              <Feather name="x" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         ) : (
           <>
             <Text className="text-2xl font-bold mb-4">Recommended Vlogs</Text>
