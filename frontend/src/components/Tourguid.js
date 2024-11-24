@@ -44,7 +44,7 @@ export const Tourguid = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       {/* Header */}
-      <View className="bg-blue-500 p-4 ">
+      <View className="bg-blue-500  p-4 pt-8">
         <Text className="text-white text-lg font-bold">Triplo Tour Guide</Text>
         <Text className="text-white text-sm">How can we assist you?</Text>
       </View>

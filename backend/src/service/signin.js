@@ -8,7 +8,6 @@ async function signin(email, password) {
 
     // console.log("Existing User Found in Signin:", existingUser);
 
-
     if (!existingUser) {
       throw new Error("Invalid email or password");
     }
@@ -35,7 +34,6 @@ async function signin(email, password) {
 
     const token = generateToken(existingUser);
     return token;
-
   } catch (error) {
     console.log("Login error:", error.message);
     throw new Error("Invalid credentials");

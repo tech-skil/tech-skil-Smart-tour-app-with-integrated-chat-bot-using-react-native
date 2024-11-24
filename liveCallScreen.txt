@@ -7,71 +7,50 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import Voice from "@react-native-voice/voice";
+import GeminiVoice from "../ExternalApi/GeminiVoice";
 import Fuse from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const LiveCallScreen = ({ navigation }) => {
   const [isMicOn, setIsMicOn] = useState(false);
   const [response, setResponse] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const startRecognition = async () => {
-    try {
-      setIsLoading(true);
-      setResponse("Listening...");
-      await Voice.start("en-US");
-    } catch (error) {
-      Alert.alert("Error", "Failed to start voice recognition.");
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
-  const stopRecognition = async () => {
-    try {
-      await Voice.stop();
-    } catch (error) {
-      Alert.alert("Error", "Failed to stop voice recognition.");
-      console.error(error);
-    }
-  };
-
-  const onVoiceResults = (e) => {
-    const spokenText = e.value?.[0] || "I didn't catch that. Please try again.";
-    setResponse(`Y's assistant says: Halogen`);
-    setIsLoading(false);
-  };
-
-  const onVoiceError = (error) => {
-    console.error("Voice Recognition Error:", error);
-    setResponse("Error occurred. Please try again.");
-    setIsLoading(false);
-  };
-
-  React.useEffect(() => {
-    Voice.onSpeechResults = onVoiceResults;
-    Voice.onSpeechError = onVoiceError;
-
-    return () => {
-      try {
-        Voice.destroy().then(() => Voice.removeAllListeners());
-      } catch (err) {
-        console.error("Error during cleanup:", err);
-      }
-    };
-  }, []);
+  const handleEndCall = () => navigation.goBack();
 
   const handleMicToggle = async () => {
-    if (isMicOn) {
-      await stopRecognition();
+    if (isListening) {
+      try {
+        setIsLoading(true);
+        const userInput = await GeminiVoice.stopRecognition();
+
+        if (userInput) {
+          const assistantResponse = await GeminiVoice.sendToGemini(userInput);
+          setResponse(assistantResponse);
+          GeminiVoice.speak(assistantResponse);
+        } else {
+          setResponse("I didn't catch that. Please try again.");
+        }
+      } catch (error) {
+        Alert.alert("Error", "An error occurred while processing your input.");
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+        setIsListening(false);
+      }
     } else {
-      await startRecognition();
+      try {
+        await GeminiVoice.startRecognition();
+        setResponse("Listening...");
+        setIsListening(true);
+      } catch (error) {
+        Alert.alert("Error", "Failed to start voice recognition.");
+        console.error(error);
+      }
     }
     setIsMicOn(!isMicOn);
   };
-
-  const handleEndCall = () => navigation.goBack();
 
   return (
     <SafeAreaView className="flex-1 bg-gray-300">
@@ -81,7 +60,8 @@ const LiveCallScreen = ({ navigation }) => {
 
       <View className="p-3 bg-white m-3 rounded-lg">
         <Text className="text-gray-600 text-base">
-          Interact with Y's Assistant. Press the mic button to speak.
+          Interact with Triplo, your travel assistant. Press the mic button to
+          speak.
         </Text>
       </View>
 
@@ -90,7 +70,7 @@ const LiveCallScreen = ({ navigation }) => {
           <ActivityIndicator size="large" color="#007AFF" />
         ) : (
           <Text className="text-base text-gray-800 text-center">
-            {response || "Press the mic and ask something!"}
+            {response || "Press the mic and ask something about your trip!"}
           </Text>
         )}
       </View>
@@ -107,7 +87,7 @@ const LiveCallScreen = ({ navigation }) => {
             size={30}
             color="white"
           />
-          <Text className="text-white text-center mt-2">
+          <Text className="text-white text-center  mt-2">
             {isMicOn ? "On" : "Mic Off"}
           </Text>
         </TouchableOpacity>

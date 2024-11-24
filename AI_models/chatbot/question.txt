@@ -1,0 +1,2 @@
+"What can you tell me about [PLACE]?",
+"What is special about [PLACE]?",

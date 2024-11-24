@@ -6,6 +6,7 @@ import Homepage from "../components/Homepage";
 import { DiscoverScreen } from "../components/Discover";
 import { Budgetplanner } from "../components/Budgetplanner";
 import { Tourguid } from "../components/Tourguid";
+import Weather from "../components/Weather";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,7 +45,6 @@ export const AppNavigator = () => {
             <Feather name="star" size={size} color={color} />
           ),
         }}
-        
       />
       <Tab.Screen
         name="Budget Planner"
@@ -55,6 +55,16 @@ export const AppNavigator = () => {
           ),
         }}
       />
+      <Tab.Screen
+        name="Weather"
+        component={Weather}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="cloud" size={size} color={color} />
+          ),
+        }}
+      />
+
       <Tab.Screen
         name="Travel Guid"
         component={Tourguid}

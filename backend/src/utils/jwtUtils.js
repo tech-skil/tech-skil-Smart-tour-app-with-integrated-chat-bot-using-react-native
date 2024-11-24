@@ -6,18 +6,10 @@ function generateToken(user) {
     throw new Error("Secret key for JWT is missing");
   }
 
-// <<<<<<< master
   const payload = {
-    // Fix spelling here to "payload"
     id: user._id,
     name: user.name,
-    email: user.email, // Fix typo: use "email" instead of "role.email"
-// =======
-//   const payload = {   // Fix spelling here to "payload"
-//     id: user._id,
-//     name: user.name,
-//     email: user.email,  // Fix typo: use "email" instead of "role.email"
-// >>>>>>> main
+    email: user.email,
     role: user.role,
   };
 
