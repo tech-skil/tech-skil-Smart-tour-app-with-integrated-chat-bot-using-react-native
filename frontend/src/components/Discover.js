@@ -11,6 +11,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { fetchVideos } from "./YouTubeService";
+import loaderGif from "../../assets/loader.gif"; // Import the loader image
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "YOUR_YOUTUBE_API_KEY";
 const ARTICLE_API_KEY = process.env.ARTICLE_API_KEY || "YOUR_ARTICLE_API_KEY";
@@ -22,15 +23,17 @@ export const DiscoverScreen = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false); // Track loading for infinite scroll
 
   // Fetch Articles
-  const fetchArticles = async () => {
-    // console.log("Using ARTICLE_API_KEY:", ARTICLE_API_KEY);
+  const fetchArticles = async (isLoadMore = false) => {
+    if (isLoadMore) setLoadingMore(true);
+    else setLoading(true);
 
-    setLoading(true);
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/everything?q=travel+Karnataka&pageSize=8&apiKey=${ARTICLE_API_KEY}`
+        `https://newsapi.org/v2/everything?q=travel+Karnataka&pageSize=8&page=${page}&apiKey=${ARTICLE_API_KEY}`
       );
 
       if (!response.ok) {
@@ -38,16 +41,19 @@ export const DiscoverScreen = () => {
       }
 
       const data = await response.json();
-      const formattedArticles = data.articles?.map((article) => ({
+      const newArticles = data.articles?.map((article) => ({
         title: article.title || "No Title Available",
         author: article.author || "Unknown",
         thumbnail: article.urlToImage || "https://via.placeholder.com/150",
       }));
-      setArticles(formattedArticles || []);
+
+      // Append new articles if loading more, otherwise replace existing
+      setArticles((prev) => (isLoadMore ? [...prev, ...newArticles] : newArticles || []));
     } catch (error) {
       console.error("Error fetching articles:", error.message);
     } finally {
-      setLoading(false);
+      if (isLoadMore) setLoadingMore(false);
+      else setLoading(false);
     }
   };
 
@@ -55,7 +61,8 @@ export const DiscoverScreen = () => {
   const fetchVlogs = async () => {
     setLoading(true);
     try {
-      const videoResults = await fetchVideos(searchQuery, YOUTUBE_API_KEY);
+      const query = `${searchQuery} travel vlog`.trim();
+      const videoResults = await fetchVideos(query, YOUTUBE_API_KEY);
       const vlogsData = videoResults.map((video) => ({
         title: video.snippet?.title || "No Title Available",
         channel: video.snippet?.channelTitle || "Unknown",
@@ -78,6 +85,20 @@ export const DiscoverScreen = () => {
       fetchVlogs();
     }
   }, [activeTab, searchQuery]);
+
+  // Infinite Scroll Handler
+  const handleLoadMore = () => {
+    if (!loadingMore) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  // Fetch more articles when the page changes
+  useEffect(() => {
+    if (page > 1) {
+      fetchArticles(true);
+    }
+  }, [page]);
 
   return (
     <View className="flex-1 bg-white">
@@ -123,12 +144,22 @@ export const DiscoverScreen = () => {
       </View>
 
       {/* Content Area */}
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 16 }}
+        onScroll={(event) => {
+          const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+          if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
+            handleLoadMore();
+          }
+        }}
+        scrollEventThrottle={400}
+      >
         {activeTab === "articles" ? (
           <>
             <Text className="text-2xl font-bold mb-4">Recommended Articles</Text>
             {loading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
+              <Image source={loaderGif} style={{ width: 50, height: 50, alignSelf: "center" }} />
             ) : (
               articles.map((article, index) => (
                 <TouchableOpacity
@@ -147,6 +178,12 @@ export const DiscoverScreen = () => {
                   </View>
                 </TouchableOpacity>
               ))
+            )}
+            {loadingMore && (
+              <Image
+                source={loaderGif}
+                style={{ width: 50, height: 50, alignSelf: "center", marginVertical: 16 }}
+              />
             )}
           </>
         ) : selectedVideoId ? (
