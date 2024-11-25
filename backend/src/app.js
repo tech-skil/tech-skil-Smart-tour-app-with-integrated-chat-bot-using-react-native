@@ -16,10 +16,10 @@ app.use("/user", signupRoute);
 app.use("/auth", signinRoute);
 
 app.listen(PORT, () => {
-//<<<<<<< master
+  //<<<<<<< master
   // console.log(`Server is running on: http://127.0.0.1:${PORT}`);
   //console.log(`Server is running on: http://localhost:${PORT}`);
-//=======
-    console.log(`Server is running on: http://127.0.0.1:${PORT}`);
-//>>>>>>> main
+  //=======
+  console.log(`Server is running on: http://127.0.0.1:${PORT}`);
+  //>>>>>>> main
 });
