@@ -4,9 +4,9 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TextInput,
   Image,
   Alert,
-
   ActivityIndicator,
   Platform,
 } from "react-native";
@@ -14,21 +14,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-
 import LoginSVG from "../../../assets/images/image.png";
-import CustomButton from "../../components/CustomButton.js";
-import InputField from "../../components/InputField.js";
 
 const LoginScreen = ({ navigation }) => {
-
-  const [email, setEmail] = useState("admin@triplo.com");
-  const [password, setPassword] = useState("admin@1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if user is already authenticated on component mount
   useEffect(() => {
     checkAuthentication();
   }, []);
@@ -37,7 +32,6 @@ const LoginScreen = ({ navigation }) => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
-        // If token exists, directly navigate to MainApp
         navigation.replace("MainApp");
       }
     } catch (error) {
@@ -45,9 +39,8 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-
   const validateEmail = (text) => {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const emailRegex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
     if (!emailRegex.test(text.trim())) {
       setEmailError("Please enter a valid email address.");
       return false;
@@ -55,10 +48,6 @@ const LoginScreen = ({ navigation }) => {
       setEmailError("");
       return true;
     }
-// <<<<<<< master
-// =======
-//     setFormData(prev => ({ ...prev, email: text }));
-// >>>>>>> main
   };
 
   const validatePassword = (text) => {
@@ -69,29 +58,36 @@ const LoginScreen = ({ navigation }) => {
       setPasswordError("");
       return true;
     }
-// <<<<<<< master
   };
 
   const handleLoginPress = async () => {
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      Alert.alert("Error", "Email and password fields cannot be empty.");
+      return;
+    }
+
+    const isEmailValid = validateEmail(trimmedEmail);
+    const isPasswordValid = validatePassword(trimmedPassword);
 
     if (!isEmailValid || !isPasswordValid) {
       return;
     }
 
     setIsLoading(true);
-    const apiUrl = "http://192.168.56.1:5000/auth/login";
 
     try {
+      const apiUrl = "http://192.168.56.1:5000/auth/login";
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: email.trim(),
-          password: password.trim(),
+          email: trimmedEmail,
+          password: trimmedPassword,
         }),
       });
 
@@ -104,45 +100,25 @@ const LoginScreen = ({ navigation }) => {
       const token = data.token;
 
       if (!token) {
-        throw new Error("No token received!");
+        throw new Error("No token received from server!");
       }
 
-      // Store token securely using AsyncStorage
       await AsyncStorage.setItem("userToken", token);
-      // Optional: Store user information if needed
-      await AsyncStorage.setItem("userEmail", email);
-
-      console.log("Login successful");
       navigation.replace("MainApp");
     } catch (error) {
-      console.error("Login Error:", error.message);
       let errorMessage = "Something went wrong. Please try again.";
-
       if (error.message.includes("Network request failed")) {
         errorMessage =
           Platform.OS === "ios"
             ? "Unable to connect to the server. Please check your internet connection."
             : "Unable to connect to the server. Please check your WiFi or mobile data settings.";
+      } else if (error.message.includes("Invalid email or password")) {
+        errorMessage = "Incorrect email or password. Please try again.";
       }
 
       Alert.alert("Login Failed", errorMessage);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Logout function to be used in other screens
-  const handleLogout = async () => {
-    try {
-      // Remove token and user data
-      await AsyncStorage.removeItem("userToken");
-      await AsyncStorage.removeItem("userEmail");
-
-      // Navigate back to login screen
-      navigation.replace("Login");
-    } catch (error) {
-      console.error("Logout error:", error);
-
     }
   };
 
@@ -175,62 +151,68 @@ const LoginScreen = ({ navigation }) => {
         {emailError ? (
           <Text className="text-red-500 mb-2">{emailError}</Text>
         ) : null}
-        <InputField
-          label={"Email ID"}
-          icon={
-            <MaterialIcons
-              name="alternate-email"
-              size={20}
-              color="#666"
-              style={{ marginRight: 5 }}
-            />
-          }
-          keyboardType="email-address"
-// <<<<<<< master
-          value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            validateEmail(text);
-          }}
-
-        />
+        <View className="flex-row border-b border-gray-300 pb-2 mb-6">
+          <MaterialIcons
+            name="alternate-email"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            placeholder="Email ID"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              validateEmail(text);
+            }}
+            className="flex-1 py-0"
+          />
+        </View>
 
         {passwordError ? (
           <Text className="text-red-500 mb-2">{passwordError}</Text>
         ) : null}
-        <InputField
-          label={"Password"}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color="#666"
-              style={{ marginRight: 5 }}
-            />
-          }
-          inputType={showPassword ? "text" : "password"}
-          fieldButtonLabel={showPassword ? "Hide" : "Show"}
-          fieldButtonFunction={() => setShowPassword(!showPassword)}
+        <View className="flex-row border-b border-gray-300 pb-2 mb-6">
+          <Ionicons
+            name="ios-lock-closed-outline"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            placeholder="Password"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              validatePassword(text);
+            }}
+            className="flex-1 py-0"
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Text className="text-blue-700 font-bold">
+              {showPassword ? "Hide" : "Show"}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            validatePassword(text);
-          }}
-        />
-        
-        <CustomButton
-          label={isLoading ? "Logging in..." : "Login"}
-
+        <TouchableOpacity
           onPress={handleLoginPress}
+          className={`bg-blue-700 p-5 rounded-lg mb-8 ${
+            isLoading ? "opacity-50" : ""
+          }`}
           disabled={isLoading}
-        />
+        >
+          <Text className="text-center font-bold text-lg text-white">
+            {isLoading ? "Logging in..." : "Login"}
+          </Text>
+        </TouchableOpacity>
 
         <View className="flex-row justify-center mt-4 items-center space-x-1">
           <Text className="text-gray-600">New to the app?</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text className="text-purple-600 font-semibold">Register</Text>
-
+            <Text className="text-blue-600 font-semibold">Register</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -238,4 +220,4 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-export default LoginScreen;
+export default LoginScreen;
