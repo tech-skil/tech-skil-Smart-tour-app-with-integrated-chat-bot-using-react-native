@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "./Header";
 import { Video } from "expo-av"; // Using expo-av for video playback
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
@@ -19,18 +20,24 @@ const PLACES = [
     location: "Hampi",
     image: require("../../assets/images/hampi.jpg"),
     tags: ["Historic", "Temple"],
+    description:
+      "The Stone Chariot is one of the most famous monuments in Hampi, Karnataka. It is an iconic symbol of Indian history and architecture.",
   },
   {
     name: "Gol Gumbaz",
     location: "Vijayanagara",
     image: require("../../assets/images/golgumbaz.jpg"),
     tags: ["Historic"],
+    description:
+      "Gol Gumbaz is a historical mausoleum in Vijayapura, Karnataka. It is renowned for its unique acoustic features and architectural design.",
   },
   {
     name: "Murudeshwara",
     location: "Uttara Kannada",
     image: require("../../assets/images/murudeshwar-beach.jpg"),
     tags: ["Beach", "Temple"],
+    description:
+      "Murudeshwara is famous for its temple and beach, offering a blend of spirituality and relaxation amidst stunning coastal views.",
   },
 ];
 
@@ -38,17 +45,14 @@ const CITIES = [
   {
     name: "Mangalore",
     image: require("../../assets/images/manglore.jpg"),
-   
   },
   {
     name: "Mysore",
     image: require("../../assets/images/mysore.jpg"),
-    
   },
   {
     name: "Bengaluru",
     image: require("../../assets/images/bengluru.jpg"),
-    
   },
   {
     name: "Vijayanagara",
@@ -58,7 +62,6 @@ const CITIES = [
   {
     name: "Shivamogga",
     image: require("../../assets/images/shivamogga.jpg"),
-    
   },
 ];
 
@@ -67,6 +70,7 @@ const FILTER_CATEGORIES = ["All", "Historic", "Beach", "Temple", "Mountain"];
 const Homepage = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedCity, setSelectedCity] = useState(null);
+  const navigation = useNavigation();
 
   const filteredPlaces =
     activeFilter === "All"
@@ -79,6 +83,10 @@ const Homepage = () => {
 
   const handleBackToHome = () => {
     setSelectedCity(null);
+  };
+
+  const handlePlacePress = (place) => {
+    navigation.navigate("PlaceDetails", { place });
   };
 
   return (
@@ -170,6 +178,7 @@ const Homepage = () => {
                 {filteredPlaces.map((place, index) => (
                   <TouchableOpacity
                     key={index}
+                    onPress={() => handlePlacePress(place)}
                     className="w-40 rounded-lg overflow-hidden shadow-sm"
                   >
                     <Image
