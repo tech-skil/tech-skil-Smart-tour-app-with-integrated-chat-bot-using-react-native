@@ -1,14 +1,17 @@
 import pandas as pd
 import joblib
+from flask import Flask, request, jsonify
 from sklearn.preprocessing import OneHotEncoder
 
-# Load the necessary pre-trained models and scalers
+# Load the pre-trained models and scalers
 model_path = 'xgboost_travel_budget_predictor.pkl'
 encoder = joblib.load('encoder.pkl')
 scaler = joblib.load('scaler.pkl')
 best_xgb_model = joblib.load(model_path)
 
-# Define a function to predict travel budget with missing data handled
+app = Flask(__name__)
+
+# Define the prediction function
 def predict_travel_budget_with_defaults(from_place, destination, group_size, travel_mode):
     # Default values for missing fields
     accommodation_type = "Homestay"  # Default
@@ -23,7 +26,7 @@ def predict_travel_budget_with_defaults(from_place, destination, group_size, tra
     cost_food = 3065  # Default (example food cost)
     cost_activities = 4533  # Default (example activity cost)
 
-    # Prepare a dictionary with user input and default values
+    # Prepare the data for prediction
     user_data = {
         'From_Place': [from_place],
         'Destination': [destination],
@@ -42,18 +45,14 @@ def predict_travel_budget_with_defaults(from_place, destination, group_size, tra
         'Cost_Activities': [cost_activities]
     }
 
-    # Convert input dictionary to DataFrame
+    # Convert input data to DataFrame
     user_df = pd.DataFrame(user_data)
 
-    # Preprocessing the categorical and numerical features
+    # Preprocessing categorical and numerical features
     categorical_features = ['From_Place', 'Destination', 'Travel_Mode', 'Accommodation_Type', 'Food_Preference', 'Activity', 'Purpose', 'Season', 'Month']
     numerical_features = ['Group_Size', 'Distance_in_km', 'Cost_Transportation', 'Cost_Accommodation', 'Cost_Food', 'Cost_Activities']
 
-    # Ensure the encoder is set to handle unknown categories
-    encoder = joblib.load('encoder.pkl')  # Load encoder again in case of updates
-    encoder.set_params(handle_unknown='ignore')  # Make sure unknown categories are ignored
-
-    # Encoding categorical variables (with unknown category handling)
+    # Encoding categorical variables with unknown category handling
     encoded_categorical = pd.DataFrame(encoder.transform(user_df[categorical_features]), 
                                         columns=encoder.get_feature_names_out(categorical_features))
 
@@ -67,15 +66,28 @@ def predict_travel_budget_with_defaults(from_place, destination, group_size, tra
     # Predict the budget using the model
     predicted_budget = best_xgb_model.predict(processed_user_data)
 
-    # Return the predicted budget
     return predicted_budget[0]
 
-# Example usage with partial input data
-from_place = "Bangalore"
-destination = "Kerala"
-group_size = 3
-travel_mode = "Flight"
+# Define the API endpoint for predicting budget
+@app.route('/predict_budget', methods=['POST'])
+def predict_budget():
+    try:
+        # Get input data from the request
+        data = request.get_json()
 
-predicted_budget = predict_travel_budget_with_defaults(from_place, destination, group_size, travel_mode)
+        from_place = data['from_place']
+        destination = data['destination']
+        group_size = data['group_size']
+        travel_mode = data['travel_mode']
 
-print(f"The predicted travel budget is: {predicted_budget}")
+        # Get predicted budget
+        predicted_budget = predict_travel_budget_with_defaults(from_place, destination, group_size, travel_mode)
+
+        # Return the predicted budget as JSON
+        return jsonify({'predicted_budget': predicted_budget})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)
