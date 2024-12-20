@@ -1,27 +1,34 @@
+import os
 import pandas as pd
 import joblib
 from sklearn.preprocessing import OneHotEncoder
 
+# Get the directory of the current file (test.py)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Load the necessary pre-trained models and scalers
-model_path = 'xgboost_travel_budget_predictor.pkl'
-encoder = joblib.load('encoder.pkl')
-scaler = joblib.load('scaler.pkl')
+model_path = os.path.join(current_dir, 'xgboost_travel_budget_predictor.pkl')
+encoder_path = os.path.join(current_dir, 'encoder.pkl')
+scaler_path = os.path.join(current_dir, 'scaler.pkl')
+
+encoder = joblib.load(encoder_path)
+scaler = joblib.load(scaler_path)
 best_xgb_model = joblib.load(model_path)
 
-# Define a function to predict travel budget with missing data handled
+# Define the prediction function
 def predict_travel_budget_with_defaults(from_place, destination, group_size, travel_mode):
     # Default values for missing fields
-    accommodation_type = "Homestay"  # Default
-    food_preference = "Non-Vegetarian"  # Default
-    activity = "Trekking"  # Default
-    purpose = "Work"  # Default
-    season = "Winter"  # Default
-    month = "April"  # Default
-    distance_km = 2040  # Default (for example, distance from Bangalore to Kerala)
-    cost_transportation = 3762  # Default (example transportation cost)
-    cost_accommodation = 1158  # Default (example accommodation cost)
-    cost_food = 3065  # Default (example food cost)
-    cost_activities = 4533  # Default (example activity cost)
+    accommodation_type = "Homestay"
+    food_preference = "Non-Vegetarian"
+    activity = "Trekking"
+    purpose = "Work"
+    season = "Winter"
+    month = "April"
+    distance_km = 2040
+    cost_transportation = 3762
+    cost_accommodation = 1158
+    cost_food = 3065
+    cost_activities = 4533
 
     # Prepare a dictionary with user input and default values
     user_data = {
@@ -50,15 +57,14 @@ def predict_travel_budget_with_defaults(from_place, destination, group_size, tra
     numerical_features = ['Group_Size', 'Distance_in_km', 'Cost_Transportation', 'Cost_Accommodation', 'Cost_Food', 'Cost_Activities']
 
     # Ensure the encoder is set to handle unknown categories
-    encoder = joblib.load('encoder.pkl')  # Load encoder again in case of updates
-    encoder.set_params(handle_unknown='ignore')  # Make sure unknown categories are ignored
+    encoder.set_params(handle_unknown='ignore')
 
-    # Encoding categorical variables (with unknown category handling)
-    encoded_categorical = pd.DataFrame(encoder.transform(user_df[categorical_features]), 
+    # Encoding categorical variables
+    encoded_categorical = pd.DataFrame(encoder.transform(user_df[categorical_features]),
                                         columns=encoder.get_feature_names_out(categorical_features))
 
     # Scaling numerical variables
-    scaled_numerical = pd.DataFrame(scaler.transform(user_df[numerical_features]), 
+    scaled_numerical = pd.DataFrame(scaler.transform(user_df[numerical_features]),
                                     columns=numerical_features)
 
     # Combine the processed features
@@ -69,13 +75,3 @@ def predict_travel_budget_with_defaults(from_place, destination, group_size, tra
 
     # Return the predicted budget
     return predicted_budget[0]
-
-# Example usage with partial input data
-from_place = "Bangalore"
-destination = "Kerala"
-group_size = 3
-travel_mode = "Flight"
-
-predicted_budget = predict_travel_budget_with_defaults(from_place, destination, group_size, travel_mode)
-
-print(f"The predicted travel budget is: {predicted_budget}")
