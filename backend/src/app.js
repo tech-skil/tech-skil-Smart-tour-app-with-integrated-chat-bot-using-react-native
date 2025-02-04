@@ -15,6 +15,9 @@ createAdminAccount();
 app.use("/user", signupRoute);
 app.use("/auth", signinRoute);
 
+const cors = require("cors");
+app.use(cors()); // Enable CORS for all requests
+
 app.listen(PORT, () => {
   //<<<<<<< master
   // console.log(`Server is running on: http://127.0.0.1:${PORT}`);

@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MONGO_URI, {
   serverSelectionTimeoutMS: 5000,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true,
 });
 
 mongoose.connection.on("connected", () => {
