@@ -1,0 +1,50 @@
+import React from "react";
+import { StatusBar } from "expo-status-bar"; // Ensure you have this import
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack"; // Missing import
+import { NavigationContainer } from "@react-navigation/native";
+import HomeScreen from "../screens/HomeScreen"; // Ensure this is correctly imported
+import LoginScreen from "../auth/login/LoginScreen"; // Import LoginScreen
+import RegisterScreen from "../auth/signup/RegisterScreen"; // Import RegisterScreen
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+function AppNavigation() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="HomeTab" 
+          component={HomeTabs} 
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+// Tab Navigator component
+function HomeTabs() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      {/* You can add more tabs here if needed */}
+    </Tab.Navigator>
+  );
+}
+
+export default AppNavigation;

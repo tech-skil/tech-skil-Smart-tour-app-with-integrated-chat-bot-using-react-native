@@ -1,148 +1,260 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   Image,
-} from 'react-native';
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 
-import InputField from '../../../components/InputField';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import RegistrationSVG from '../../../assets/images/image.png';
-import CustomButton from '../../../components/CustomButton';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import RegistrationSVG from "../../../assets/images/image.png";
 
 const RegisterScreen = ({ navigation }) => {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullNameError, setFullNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullNameError, setFullNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const validateFullName = (text) => {
-    if (text.length < 3) {
-      setFullNameError('Full name must be at least 3 characters long.');
+  const validateFullName = () => {
+    if (fullName.trim() === "") {
+      setFullNameError("Please enter your name");
+    } else if (fullName.length < 3) {
+      setFullNameError("Full name must be at least 3 characters long.");
     } else {
-      setFullNameError('');
+      setFullNameError("");
     }
-    setFullName(text);
   };
 
-  const validateEmail = (text) => {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (!emailRegex.test(text)) {
-      setEmailError('Please enter a valid email address.');
+  const validateEmail = () => {
+    if (email.trim() === "") {
+      setEmailError("Please enter your email");
     } else {
-      setEmailError('');
+      const emailRegex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError("Please enter a valid email address.");
+      } else {
+        setEmailError("");
+      }
     }
-    setEmail(text);
   };
 
-  const validatePassword = (text) => {
-    if (text.length < 8) {
-      setPasswordError('Password must be at least 8 characters long.');
+  const validatePassword = () => {
+    if (password.trim() === "") {
+      setPasswordError("Please enter a password");
+    } else if (password.length < 8) {
+      setPasswordError("Password must be at least 8 characters long.");
     } else {
-      setPasswordError('');
+      setPasswordError("");
     }
-    setPassword(text);
   };
 
-  const validateConfirmPassword = (text) => {
-    if (text !== password) {
-      setConfirmPasswordError('Passwords do not match.');
+  const validateConfirmPassword = () => {
+    if (confirmPassword.trim() === "") {
+      setConfirmPasswordError("Please confirm your password");
+    } else if (confirmPassword !== password) {
+      setConfirmPasswordError("Passwords do not match.");
     } else {
-      setConfirmPasswordError('');
+      setConfirmPasswordError("");
     }
-    setConfirmPassword(text);
   };
 
-  const handleRegister = () => {
-    // Validate fields
-    validateFullName(fullName);
-    validateEmail(email);
-    validatePassword(password);
-    validateConfirmPassword(confirmPassword);
+  // <<<<<<< master
+  const handleRegister = async () => {
+    // Run validation
+    validateFullName();
+    validateEmail();
+    validatePassword();
+    validateConfirmPassword();
 
-    // If there are no validation errors, print success message
-    if (!fullNameError && !emailError && !passwordError && !confirmPasswordError) {
-      console.log('Registration successful');
-    } else {
-      console.log('Please fix validation errors');
+    if (
+      fullNameError ||
+      emailError ||
+      passwordError ||
+      confirmPasswordError ||
+      fullName.length < 3 ||
+      password.length < 8 ||
+      confirmPassword !== password
+    ) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://192.168.56.1:5000/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: fullName,
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Registration successful!", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]);
+      } else {
+        Alert.alert(
+          "Error",
+          data.message || "Registration failed. Please try again."
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred. Please check your connection.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
-        <View style={{ alignItems: 'center' }}>
+    <SafeAreaView className="flex-1 m-4 justify-center">
+      <ScrollView showsVerticalScrollIndicator={false} className="px-6">
+        <View className="items-center p-10">
           <Image
             source={RegistrationSVG}
-            style={{ height: 300, width: 300, transform: [{ rotate: '-5deg' }] }}
+            style={{
+              height: 280,
+              width: 280,
+              transform: [{ rotate: "-5deg" }],
+            }}
           />
         </View>
+        <View>
+          <Text className="text-4xl font-medium text-gray-800 mb-8">
+            Register
+          </Text>
 
-        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#333', marginVertical: 20 }}>Register</Text>
-        {/* <Text style={{ textAlign: 'center', color: '#666', marginBottom: 20 }}>
-          Or, register with email...
-        </Text> */}
+          {fullNameError ? (
+            <Text className="text-red-500 mb-2">{fullNameError}</Text>
+          ) : null}
+          <View className="flex-row border-b border-gray-300 pb-2 mb-6">
+            <Ionicons
+              name="person-outline"
+              size={20}
+              color="#666"
+              style={{ marginRight: 5 }}
+            />
+            <TextInput
+              placeholder="Full Name"
+              className="flex-1 py-0"
+              value={fullName}
+              onChangeText={(text) => {
+                setFullNameError("");
+                setFullName(text);
+              }}
+              onBlur={validateFullName}
+            />
+          </View>
 
-        {fullNameError ? (
-          <Text style={{ color: 'red', marginBottom: 8 }}>{fullNameError}</Text>
-        ) : null}
-        <InputField 
-          label="Full Name"
-          icon={<Ionicons name="person-outline" size={20} color="#666" style={{ marginRight: 5 }} />}
-          value={fullName}
-          onChangeText={validateFullName}
-        />
+          {emailError ? (
+            <Text className="text-red-500 mb-2">{emailError}</Text>
+          ) : null}
+          <View className="flex-row border-b border-gray-300 pb-2 mb-6">
+            <MaterialIcons
+              name="alternate-email"
+              size={20}
+              color="#666"
+              style={{ marginRight: 5 }}
+            />
+            <TextInput
+              placeholder="Email ID"
+              keyboardType="email-address"
+              className="flex-1 py-0"
+              value={email}
+              onChangeText={(text) => {
+                setEmailError("");
+                setEmail(text);
+              }}
+              onBlur={validateEmail}
+            />
+          </View>
 
-        {emailError ? (
-          <Text style={{ color: 'red', marginBottom: 8 }}>{emailError}</Text>
-        ) : null}
-        <InputField
-          label="Email ID"
-          icon={<MaterialIcons name="alternate-email" size={20} color="#666" style={{ marginRight: 5 }} />}
-          keyboardType="email-address"
-          value={email}
-          onChangeText={validateEmail}
-        />
+          {passwordError ? (
+            <Text className="text-red-500 mb-2">{passwordError}</Text>
+          ) : null}
+          <View className="flex-row border-b border-gray-300 pb-2 mb-6">
+            <Ionicons
+              name="ios-lock-closed-outline"
+              size={20}
+              color="#666"
+              style={{ marginRight: 5 }}
+            />
+            <TextInput
+              placeholder="Password"
+              secureTextEntry={true}
+              className="flex-1 py-0"
+              value={password}
+              onChangeText={(text) => {
+                setPasswordError("");
+                setPassword(text);
+              }}
+              onBlur={validatePassword}
+            />
+          </View>
 
-        {passwordError ? (
-          <Text style={{ color: 'red', marginBottom: 8 }}>{passwordError}</Text>
-        ) : null}
-        <InputField
-          label="Password"
-          icon={<Ionicons name="ios-lock-closed-outline" size={20} color="#666" style={{ marginRight: 5 }} />}
-          inputType="password"
-          value={password}
-          onChangeText={validatePassword}
-          secureTextEntry
-        />
+          {confirmPasswordError ? (
+            <Text className="text-red-500 mb-2">{confirmPasswordError}</Text>
+          ) : null}
+          <View className="flex-row border-b border-gray-300 pb-2 mb-6">
+            <Ionicons
+              name="ios-lock-closed-outline"
+              size={20}
+              color="#666"
+              style={{ marginRight: 5 }}
+            />
+            <TextInput
+              placeholder="Confirm Password"
+              secureTextEntry={true}
+              className="flex-1 py-0"
+              value={confirmPassword}
+              onChangeText={(text) => {
+                setConfirmPasswordError("");
+                setConfirmPassword(text);
+              }}
+              onBlur={validateConfirmPassword}
+            />
+          </View>
 
-        {confirmPasswordError ? (
-          <Text style={{ color: 'red', marginBottom: 8 }}>{confirmPasswordError}</Text>
-        ) : null}
-        <InputField
-          label="Confirm Password"
-          icon={<Ionicons name="ios-lock-closed-outline" size={20} color="#666" style={{ marginRight: 5 }} />}
-          inputType="password"
-          value={confirmPassword}
-          onChangeText={validateConfirmPassword}
-          secureTextEntry
-        />
-
-        <CustomButton label="Register" onPress={handleRegister} />
-
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
-          <Text>Already registered?</Text>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={{ color: '#6A0DAD', fontWeight: '600' }}> Login</Text>
+          <TouchableOpacity
+            onPress={handleRegister}
+            className="bg-blue-700 p-5 rounded-lg mb-8"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-center font-bold text-lg text-white">
+                Register
+              </Text>
+            )}
           </TouchableOpacity>
+
+          <View className="flex-row justify-center mb-8">
+            <Text>Already registered?</Text>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text className="text-blue-700 font-semibold"> Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
